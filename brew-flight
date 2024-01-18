@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'async', '~> 2.8'
+end
+
+require 'async'
+
+formulae = `brew list --formulae`.split("\n")
+results = Array.new(formulae.size)
+
+Async do |task|
+  formulae.each_with_index do |formula, index|
+    task.async do
+      dependents = `brew uses --recursive --installed #{formula}`.split("\n")
+      results[index] = [formula, dependents]
+    end
+  end
+end
+
+results.each do |formula, dependents|
+  puts formula
+  puts dependents.map {|d| "  #{d}"}
+  puts ""
+end

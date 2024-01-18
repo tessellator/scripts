@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+
+# This program is inspired by the Go implementation by @abennett
+# https://github.com/abennett/ghok
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'async-http', '~> 0.61.0'
+  gem 'base64', '~> 0.2.0'
+  gem 'json', '~> 2.7', '>= 2.7.1'
+end
+
+require 'async'
+require 'async/barrier'
+require 'async/http/internet'
+require 'json'
+require 'time'
+
+
+def status_icon(status)
+  case status
+  when 'none', 'operational'
+      '✅'
+  when 'minor', 'degraded_performance'
+      '🟡'
+  when 'major', 'partial_outage'
+      '🟠'
+  when 'critical', 'major_outage'
+      '🔴'
+  else
+      '❔'
+  end
+end
+
+def fetch_all_json(endpoints)
+  responses = Array.new(endpoints.length)
+
+  Async do
+    internet = Async::HTTP::Internet.new
+    barrier = Async::Barrier.new
+
+    endpoints.each_with_index do |endpoint, index|
+      barrier.async do
+        response = internet.get(endpoint).read
+        responses[index] = JSON.parse(response, object_class: OpenStruct)
+      end
+    end
+
+    barrier.wait
+  ensure
+    internet&.close
+  end
+
+  responses
+end
+
+def ftime(time)
+  tz = time.strftime('%z') == '+0000' ? 'UTC' : time.strftime('%Z')
+  time.strftime('%a, %d %b %Y %H:%M ') + tz
+end
+
+components_response, incidents_response = fetch_all_json([
+  'https://www.githubstatus.com/api/v2/components.json',
+  'https://www.githubstatus.com/api/v2/incidents/unresolved.json'
+])
+
+components = components_response.components.reject { |c| c.id == '0l2p9nhqnxpd' }
+longest_len = components.map{ |c| c.name }.max_by(&:length).length
+
+puts "=== Components as of #{ftime(DateTime.parse(components_response.page.updated_at))} ==="
+for component in components
+  printf "%-#{longest_len}s\t%s\n", component.name, status_icon(component.status)
+end
+
+unless incidents_response.incidents.empty?
+  print "\n=== Incidents ==="
+  for incident in incidents_response.incidents
+    puts "\nName:\t#{incident.name}"
+    puts "Impact:\t#{status_icon(incident.impact)} #{incident.impact}"
+    puts "Status:\t#{incident.status}"
+    puts "Details:\t#{incident.incident_updates.first.body}"
+    puts "Link:\t#{incident.shortlink}"
+  end
+end

@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'base64'
+  gem 'bigdecimal'
+  gem 'csv'
+  gem 'httparty'
+  gem 'json'
+end
+
+require 'httparty'
+require 'json'
+
+begin
+  tags = File.readlines("#{Dir.home}/.config/lobsters/tags").map(&:chomp)
+rescue
+  tags = []
+end
+
+response = HTTParty.get('https://lobste.rs/hottest')
+stories = JSON.parse(response.body, object_class: OpenStruct)
+lines = []
+
+stories.each do |story|
+  next unless tags.empty? or tags.intersect?(story.tags)
+
+  lines << "#{story.title} (#{story.short_id_url})\n#{story.comment_count} comments [#{story.tags.join(', ')}]"
+end
+
+puts lines.join("\n\n")

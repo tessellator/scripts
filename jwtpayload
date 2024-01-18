@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'base64', '~> 0.2.0'
+end
+
+printf "%s", Base64.decode64(ARGV[0].split('.')[1])

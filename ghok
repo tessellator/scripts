@@ -67,7 +67,7 @@ components_response, incidents_response = fetch_all_json([
 ])
 
 components = components_response.components.reject { |c| c.id == '0l2p9nhqnxpd' }
-longest_len = components.map{ |c| c.name }.max_by(&:length).length
+longest_len = components.map(&:name).max_by(&:length).length
 
 puts "=== Components as of #{ftime(DateTime.parse(components_response.page.updated_at))} ==="
 for component in components

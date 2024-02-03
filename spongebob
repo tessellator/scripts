@@ -1,15 +1,14 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bun
 
-def spongebobify(str)
-  lower = false
-  str.chars.map do |c|
-    if c =~ /[a-zA-Z]/
-      lower ? lower = false : lower = true
-      lower ? c.downcase : c.upcase
-    else
-      c
-    end
-  end.join
-end
+function spongebob(s) {
+  let lower = false;
+  return s.split('').map(c => {
+    if (c.match(/[a-zA-Z]/)) {
+      lower = !lower;
+      return lower ? c.toLowerCase() : c.toUpperCase();
+    }
+    return c;
+  }).join('');
+}
 
-printf "%s", spongebobify(ARGV[0])
+process.stdout.write(spongebob(process.argv[2]));

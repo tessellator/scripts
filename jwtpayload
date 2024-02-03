@@ -1,10 +1,5 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bun
 
-require 'bundler/inline'
-
-gemfile do
-  source 'https://rubygems.org'
-  gem 'base64', '~> 0.2.0'
-end
-
-printf "%s", Base64.decode64(ARGV[0].split('.')[1])
+const payload = process.argv[2].split('.')[1];
+const buf = new Buffer(payload, 'base64');
+process.stdout.write(buf.toString());

@@ -1,5 +1,5 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bun
 
-require 'securerandom'
+import { randomUUID } from 'node:crypto';
 
-printf "%s", SecureRandom.uuid
+process.stdout.write(randomUUID());

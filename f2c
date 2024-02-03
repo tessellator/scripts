@@ -1,7 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bun
 
-def f2c(f)
-  (f - 32.0) * 5.0 / 9.0
-end
-
-puts format("%.2f", f2c(ARGV[0].to_f))
+const c = (parseFloat(process.argv[2]) - 32.0) * 5.0 / 9.0;
+console.log(c.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));

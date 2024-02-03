@@ -1,33 +1,21 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bun
 
-require 'bundler/inline'
+const file = Bun.file(`${process.env.HOME}/.config/lobsters/tags`);
+let tags = [];
 
-gemfile do
-  source 'https://rubygems.org'
-  gem 'base64'
-  gem 'bigdecimal'
-  gem 'csv'
-  gem 'httparty'
-  gem 'json'
-end
+if(await file.exists()) {
+  tags = (await file.text()).split("\n").map(x => x.trim()).filter(x => x.length > 0);
+}
 
-require 'httparty'
-require 'json'
+const stories = await (fetch('https://lobste.rs/hottest').then((res) => res.json()));
+let lines = [];
 
-begin
-  tags = File.readlines("#{Dir.home}/.config/lobsters/tags").map(&:chomp)
-rescue
-  tags = []
-end
+for(const story of stories) {
+  const foundTags = tags.filter(tag => story.tags.includes(tag));
+  if(tags.length === 0 || foundTags.length > 0) {
+    lines.push(`${story.title} (${story.short_id_url})\n${story.comment_count} comments [${story.tags.join(', ')}]`);
+  }
+}
 
-response = HTTParty.get('https://lobste.rs/hottest')
-stories = JSON.parse(response.body, object_class: OpenStruct)
-lines = []
 
-stories.each do |story|
-  next unless tags.empty? or tags.intersect?(story.tags)
-
-  lines << "#{story.title} (#{story.short_id_url})\n#{story.comment_count} comments [#{story.tags.join(', ')}]"
-end
-
-puts lines.join("\n\n")
+console.log(lines.join('\n\n'));

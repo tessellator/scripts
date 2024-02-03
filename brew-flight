@@ -1,28 +1,19 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bun
 
-require 'bundler/inline'
+import { $ } from 'bun';
 
-gemfile do
-  source 'https://rubygems.org'
-  gem 'async', '~> 2.8'
-end
+const formulae = (await $`brew list --formulae`.text())
+  .split('\n')
+  .filter((x) => x.length > 0);
 
-require 'async'
+const results = await Promise.all(formulae.map(async (formula) => {
+  const dependents = (await $`brew uses --recursive --installed ${formula}`.text()).split('\n');
+  return { formula, dependents };
+}));
 
-formulae = `brew list --formulae`.split("\n")
-results = Array.new(formulae.size)
-
-Async do |task|
-  formulae.each_with_index do |formula, index|
-    task.async do
-      dependents = `brew uses --recursive --installed #{formula}`.split("\n")
-      results[index] = [formula, dependents]
-    end
-  end
-end
-
-results.each do |formula, dependents|
-  puts formula
-  puts dependents.map {|d| "  #{d}"}
-  puts ""
-end
+results.forEach((result) => {
+  console.log(result.formula);
+  result.dependents.forEach((dependent) => {
+    console.log(`  ${dependent}`);
+  });
+});

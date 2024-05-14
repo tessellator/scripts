@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+brew uses --recursive --installed $1

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'uuid7'
+end
+
+print UUID7.generate

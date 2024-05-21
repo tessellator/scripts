@@ -46,10 +46,10 @@ const incidents = incidentsResponse.incidents;
 if (incidents.length > 0) {
   console.log(`\n=== Incidents ===`);
   incidentsResponse.incidents.forEach((incident) => {
-    console.log(`\nName:\t${incident.name}`);
-    console.log(`Impact:\t${statusIcon(incident.impact)} ${incident.impact}`);
-    console.log(`Status:\t${incident.status}`);
-    console.log(`Details:\t${incident.incident_updates[0].body}`);
-    console.log(`Link:\t${incident.shortlink}`);
+    console.log(`\nName:   ${incident.name}`);
+    console.log(`Impact:  ${statusIcon(incident.impact)}  ${incident.impact}`);
+    console.log(`Status:  ${incident.status}`);
+    console.log(`Link:    ${incident.shortlink}`);
+    console.log(`Details: ${incident.incident_updates[0].body}`);
   });
 }

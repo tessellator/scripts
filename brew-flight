@@ -1,13 +1,15 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S deno run --allow-run
 
-import { $ } from 'bun';
+function $(command) {
+  const [cmd, ...args] = command.split(' ');
+  const { stdout } = new Deno.Command(cmd, { args }).outputSync();
+  return new TextDecoder().decode(stdout).trim();
+}
 
-const formulae = (await $`brew list --formulae`.text())
-  .split('\n')
-  .filter((x) => x.length > 0);
+const formulae = $("brew list --formulae").split('\n').filter((x) => x.length > 0);
 
 const results = await Promise.all(formulae.map(async (formula) => {
-  const dependents = (await $`brew uses --recursive --installed ${formula}`.text()).split('\n');
+  const dependents = (await $(`brew uses --recursive --installed ${formula}`)).split('\n');
   return { formula, dependents };
 }));
 

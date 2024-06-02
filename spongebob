@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S deno run
 
 function spongebob(s) {
   let lower = false;
@@ -11,4 +11,4 @@ function spongebob(s) {
   }).join('');
 }
 
-process.stdout.write(spongebob(process.argv[2]));
+Deno.stdout.write(new TextEncoder().encode(spongebob(Deno.args[0])));

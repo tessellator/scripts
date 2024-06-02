@@ -1,6 +1,6 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S deno run
 
-const msFromNow = Number(process.argv[2]) * 24 * 60 * 60 * 1000;
+const msFromNow = Number(Deno.args[0]) * 24 * 60 * 60 * 1000;
 const today = Date.now();
 
 const target = new Date(today + msFromNow).toISOString();

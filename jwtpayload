@@ -1,5 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S deno run
 
-const payload = process.argv[2].split('.')[1];
-const buf = new Buffer(payload, 'base64');
-process.stdout.write(buf.toString());
+const payload = atob(Deno.args[0].split('.')[1]);
+Deno.stdout.write(new TextEncoder().encode(payload));

@@ -1,6 +1,6 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S deno run
 
-const endDate = new Date(process.argv[2]);
+const endDate = new Date(Deno.args[0]);
 const today = new Date();
 
 const duration = endDate - today;

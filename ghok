@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S deno run --allow-net
 
 // This program is inspired by the Go implementation by @abennett
 // https://github.com/abennett/ghok

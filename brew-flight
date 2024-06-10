@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-run
+#!/usr/bin/env -S deno run --allow-run=brew
 
 function $(command) {
   const [cmd, ...args] = command.split(' ');

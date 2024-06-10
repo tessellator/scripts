@@ -1,21 +1,30 @@
 #!/usr/bin/env -S deno run --allow-run=brew
 
 function $(command) {
-  const [cmd, ...args] = command.split(' ');
+  const [cmd, ...args] = command.split(" ");
   const { stdout } = new Deno.Command(cmd, { args }).outputSync();
   return new TextDecoder().decode(stdout).trim();
 }
 
-const formulae = $("brew list --formulae").split('\n').filter((x) => x.length > 0);
+const formulae = $("brew list --formulae")
+  .split("\n")
+  .filter((x) => x.length > 0);
 
-const results = await Promise.all(formulae.map(async (formula) => {
-  const dependents = (await $(`brew uses --recursive --installed ${formula}`)).split('\n');
-  return { formula, dependents };
-}));
+const results = await Promise.all(
+  formulae.map(async (formula) => {
+    const dependents = (await $(`brew why ${formula}`))
+      .split("\n")
+      .filter((x) => x.length > 0);
+    return { formula, dependents };
+  })
+);
 
 results.forEach((result) => {
   console.log(result.formula);
-  result.dependents.forEach((dependent) => {
-    console.log(`  ${dependent}`);
-  });
+  if (result.dependents.length > 0) {
+    result.dependents.forEach((dependent) => {
+      console.log(`  ${dependent}`);
+    });
+  }
+  console.log("");
 });

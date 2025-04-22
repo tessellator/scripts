@@ -1,28 +1,24 @@
-#!/usr/bin/env -S deno run --allow-env=HOME --allow-read --allow-net
+#!/usr/bin/env ruby
 
-import { existsSync } from "https://deno.land/std/fs/mod.ts";
+require 'net/http'
+require 'json'
+require 'ostruct'
+require 'uri'
 
-const filePath = `${Deno.env.get("HOME")}/.config/lobsters/tags`;
-let tags = [];
+begin
+  tags = File.readlines("#{Dir.home}/.config/lobsters/tags").map(&:chomp)
+rescue
+  tags = []
+end
 
-if (existsSync(filePath)) {
-  tags = Deno.readTextFileSync(filePath).trim().split("\n");
-}
+response = Net::HTTP.get(URI('https://lobste.rs/hottest'))
+stories = JSON.parse(response, object_class: OpenStruct)
+lines = []
 
-const stories = await fetch("https://lobste.rs/hottest").then((res) =>
-  res.json()
-);
-let lines = [];
+stories.each do |story|
+  next unless tags.empty? or tags.intersect?(story.tags)
 
-for (const story of stories) {
-  const foundTags = tags.filter((tag) => story.tags.includes(tag));
-  if (tags.length === 0 || foundTags.length > 0) {
-    lines.push(
-      `${story.title} (${story.short_id_url})\n${
-        story.comment_count
-      } comments [${story.tags.join(", ")}]`
-    );
-  }
-}
+  lines << "#{story.title} (#{story.short_id_url})\n#{story.comment_count} comments [#{story.tags.join(', ')}]"
+end
 
-console.log(lines.join("\n\n"));
+puts lines.join("\n\n")

@@ -1,3 +1,3 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-console.log('0x' + parseInt(Deno.args[0]).toString(16).toUpperCase());
+puts format("0x%x", ARGV[0].to_i)

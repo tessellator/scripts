@@ -1,6 +1,3 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-import { permutations } from "https://deno.land/x/combinatorics@1.1.2/permutations.ts";
-
-const perms = new Set(permutations(Deno.args[0].split("")).map(p => p.join("")))
-Array.from(perms).sort().forEach(p => console.log(p));
+puts ARGV[0].chars.permutation.map(&:join).uniq.sort

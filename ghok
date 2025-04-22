@@ -1,55 +1,57 @@
-#!/usr/bin/env -S deno run --allow-net
+#!/usr/bin/env ruby
 
-// This program is inspired by the Go implementation by @abennett
-// https://github.com/abennett/ghok
+# This program is inspired by the Go implementation by @abennett
+# https://github.com/abennett/ghok
 
-function statusIcon(status) {
-  switch (status) {
-    case 'none':
-    case 'operational':
-      return '✅';
+require 'json'
+require 'net/http'
+require 'ostruct'
+require 'time'
+require 'uri'
 
-    case 'minor':
-    case 'degraded_performance':
-      return '⚠️';
+def status_icon(status)
+  case status
+  when 'none', 'operational'
+      '✅'
+  when 'minor', 'degraded_performance'
+      '⚠️'
+  when 'major', 'partial_outage'
+      '🟠'
+  when 'critical', 'major_outage'
+      '⛔️'
+  when 'under_maintenance'
+      '🔧'
+  else
+      '❓'
+  end
+end
 
-    case 'major':
-    case 'partial_outage':
-      return '🔴';
+def get(uri_str)
+  JSON.parse(Net::HTTP.get(URI(uri_str)), object_class: OpenStruct)
+end
 
-    case 'critical':
-    case 'major_outage':
-      return '⛔️';
+def ftime(time)
+  tz = time.strftime('%z') == '+0000' ? 'UTC' : time.strftime('%Z')
+  time.strftime('%a, %d %b %Y %H:%M ') + tz
+end
 
-    default:
-      return '❓';
-  }
-}
+components_resp = get('https://www.githubstatus.com/api/v2/components.json')
+components = components_resp.components.reject { |c| c.id == '0l2p9nhqnxpd' }
+longest_len = components.map(&:name).max_by(&:length).length
 
-function fetchJSON(url) {
-  return fetch(url).then((resp) => resp.json());
-}
+puts "=== Components as of #{ftime(DateTime.parse(components_resp.page.updated_at))} ==="
+for component in components
+  puts "#{component.name.ljust(longest_len)} #{status_icon(component.status)}"
+end
 
-const [componentsResponse, incidentsResponse] = await Promise.all([
-  fetchJSON('https://www.githubstatus.com/api/v2/components.json'),
-  fetchJSON('https://www.githubstatus.com/api/v2/incidents/unresolved.json'),
-]);
-
-console.log(`=== Components as of ${new Date(componentsResponse.page.updated_at).toLocaleString()} ===`);
-const components = componentsResponse.components.filter((c) => c.id !== '0l2p9nhqnxpd');
-const longestLength = Math.max(...components.map((c) => c.name.length));
-components.forEach((c) => {
-  console.log(`${c.name}${' '.repeat(longestLength - c.name.length)} ${statusIcon(c.status)}`);
-});
-
-const incidents = incidentsResponse.incidents;
-if (incidents.length > 0) {
-  console.log(`\n=== Incidents ===`);
-  incidentsResponse.incidents.forEach((incident) => {
-    console.log(`\nName:   ${incident.name}`);
-    console.log(`Impact:  ${statusIcon(incident.impact)}  ${incident.impact}`);
-    console.log(`Status:  ${incident.status}`);
-    console.log(`Link:    ${incident.shortlink}`);
-    console.log(`Details: ${incident.incident_updates[0].body}`);
-  });
-}
+incidents_resp = get('https://www.githubstatus.com/api/v2/incidents/unresolved.json')
+unless incidents_resp.incidents.empty?
+  print "\n=== Incidents ==="
+  for incident in incidents_response.incidents
+    puts "\nName:\t#{incident.name}"
+    puts "Impact:\t#{status_icon(incident.impact)} #{incident.impact}"
+    puts "Status:\t#{incident.status}"
+    puts "Details:\t#{incident.incident_updates.first.body}"
+    puts "Link:\t#{incident.shortlink}"
+  end
+end

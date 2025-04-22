@@ -1,5 +1,5 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-import { randomUUID } from 'node:crypto';
+require 'securerandom'
 
-Deno.stdout.write(new TextEncoder().encode(randomUUID()));
+printf "%s", SecureRandom.uuid

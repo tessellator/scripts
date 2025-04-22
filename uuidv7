@@ -1,5 +1,10 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-import { uuidv7 } from "https://unpkg.com/uuidv7@^1";
+require 'bundler/inline'
 
-Deno.stdout.write(new TextEncoder().encode(uuidv7()));
+gemfile do
+  source 'https://rubygems.org'
+  gem 'uuid7'
+end
+
+print UUID7.generate

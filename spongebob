@@ -1,14 +1,15 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-function spongebob(s) {
-  let lower = false;
-  return s.split('').map(c => {
-    if (c.match(/[a-zA-Z]/)) {
-      lower = !lower;
-      return lower ? c.toLowerCase() : c.toUpperCase();
-    }
-    return c;
-  }).join('');
-}
+def spongebobify(str)
+  lower = false
+  str.chars.map do |c|
+    if c =~ /[a-zA-Z]/
+      lower ? lower = false : lower = true
+      lower ? c.downcase : c.upcase
+    else
+      c
+    end
+  end.join
+end
 
-Deno.stdout.write(new TextEncoder().encode(spongebob(Deno.args[0])));
+printf "%s", spongebobify(ARGV[0])

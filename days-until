@@ -1,8 +1,5 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-const endDate = new Date(Deno.args[0]);
-const today = new Date();
+require 'date'
 
-const duration = endDate - today;
-
-console.log(Math.ceil(duration / (1000 * 60 * 60 * 24)));
+puts (Date.parse(ARGV[0]) - Date.today).to_i

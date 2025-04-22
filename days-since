@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'date'
+
+puts (Date.today - Date.parse(ARGV[0])).to_i

@@ -1,8 +1,5 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-const msFromNow = Number(Deno.args[0]) * 24 * 60 * 60 * 1000;
-const today = Date.now();
+require 'date'
 
-const target = new Date(today + msFromNow).toISOString();
-
-console.log(target.substring(0, 10));
+puts Date.today.next_day(ARGV[0].to_i)

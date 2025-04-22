@@ -1,4 +1,12 @@
-#!/usr/bin/env -S deno run
+#!/usr/bin/env ruby
 
-const payload = atob(Deno.args[0].split('.')[1]);
-Deno.stdout.write(new TextEncoder().encode(payload));
+require 'bundler/inline'
+gemfile do
+  source 'https://rubygems.org'
+  gem 'base64'
+end
+
+require 'base64'
+
+payload = ARGV[0].split('.')[1]
+puts Base64.decode64(payload)

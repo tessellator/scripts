@@ -3,8 +3,8 @@
 def spongebobify(str)
   lower = false
   str.chars.map do |c|
-    if c =~ /[a-zA-Z]/
-      lower ? lower = false : lower = true
+    if c.match?(/[a-zA-Z]/)
+      lower = !lower
       lower ? c.downcase : c.upcase
     else
       c

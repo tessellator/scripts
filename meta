@@ -1,21 +1,21 @@
 #!/usr/bin/env ruby
 
-require 'bundler/inline'
+require "bundler/inline"
 
 gemfile do
-  source 'https://rubygems.org'
-  gem 'nokogiri'
+  source "https://rubygems.org"
+  gem "nokogiri"
 end
 
-require 'net/http'
-require 'nokogiri'
-require 'uri'
+require "net/http"
+require "nokogiri"
+require "uri"
 
 def skip(meta)
-  (meta['name'].nil? && meta['property'].nil?) ||
-    meta['name'] == 'viewport' ||
-    meta['name'] == 'robots'
+  (meta["name"].nil? && meta["property"].nil?) ||
+    meta["name"] == "viewport" ||
+    meta["name"] == "robots"
 end
 
 doc = Nokogiri::HTML(Net::HTTP.get(URI(ARGV[0])))
-doc.css('meta').each { |meta| puts meta.to_html unless skip(meta) }
+doc.css("meta").each { |meta| puts meta.to_html unless skip(meta) }

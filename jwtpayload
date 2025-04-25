@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-require 'bundler/inline'
+require "bundler/inline"
 gemfile do
-  source 'https://rubygems.org'
-  gem 'base64'
+  source "https://rubygems.org"
+  gem "base64"
 end
 
-require 'base64'
+require "base64"
 
-payload = ARGV[0].split('.')[1]
+payload = ARGV[0].split(".")[1]
 puts Base64.decode64(payload)

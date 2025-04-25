@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'net/http'
-require 'json'
-require 'ostruct'
-require 'uri'
+require "net/http"
+require "json"
+require "ostruct"
+require "uri"
 
 begin
   tags = File.readlines("#{Dir.home}/.config/lobsters/tags").map(&:chomp)
@@ -11,14 +11,14 @@ rescue
   tags = []
 end
 
-response = Net::HTTP.get(URI('https://lobste.rs/hottest'))
+response = Net::HTTP.get(URI("https://lobste.rs/hottest"))
 stories = JSON.parse(response, object_class: OpenStruct)
 lines = []
 
 stories.each do |story|
-  next unless tags.empty? or tags.intersect?(story.tags)
+  next unless tags.empty? || tags.intersect?(story.tags)
 
-  lines << "#{story.title} (#{story.short_id_url})\n#{story.comment_count} comments [#{story.tags.join(', ')}]"
+  lines << "#{story.title} (#{story.short_id_url})\n#{story.comment_count} comments [#{story.tags.join(", ")}]"
 end
 
 puts lines.join("\n\n")

@@ -6,6 +6,6 @@ formulae.each do |formula|
   dependents = `brew uses --recursive --installed #{formula}`.split("\n")
 
   puts formula
-  puts dependents.map {|d| "  #{d}"}
+  puts dependents.map { |d| "  #{d}" }
   puts ""
 end

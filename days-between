@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require "date"
+
+print (Date.parse(ARGV[0]) - Date.parse(ARGV[1])).abs.to_i

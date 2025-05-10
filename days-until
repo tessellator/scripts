@@ -2,4 +2,4 @@
 
 require "date"
 
-puts (Date.parse(ARGV[0]) - Date.today).to_i
+print (Date.parse(ARGV[0]) - Date.today).to_i

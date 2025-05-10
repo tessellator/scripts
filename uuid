@@ -2,4 +2,4 @@
 
 require "securerandom"
 
-printf "%s", SecureRandom.uuid
+print SecureRandom.uuid

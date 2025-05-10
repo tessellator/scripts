@@ -2,4 +2,4 @@
 
 require "date"
 
-puts Date.today.next_day(ARGV[0].to_i)
+print Date.today.next_day(ARGV[0].to_i)

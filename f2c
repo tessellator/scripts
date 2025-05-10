@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
 c = (ARGV[0].to_f - 32.0) * 5.0 / 9.0
-puts format("%.2f", c)
+print format("%.2f", c)

@@ -12,4 +12,4 @@ def spongebobify(str)
   end.join
 end
 
-printf "%s", spongebobify(ARGV[0])
+print spongebobify(ARGV[0])

@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+
+  gem "base64", "~> 0.2.0"
+  gem "csv", "~> 3.3.4"
+  gem "roo", "~> 2.10.1"
+end
+
+require "roo"
+require "csv"
+
+input_file = ARGV[0]
+output_dir = ARGV[1]
+
+if input_file.nil? || input_file.empty?
+  puts "Please provide the input xlsx file as an argument."
+  exit
+end
+
+if output_dir.nil? || output_dir.empty?
+  puts "Please provide the output directory as an argument."
+  exit
+end
+
+Dir.mkdir(output_dir) unless Dir.exist?(output_dir)
+
+xlsx = Roo::Spreadsheet.open(input_file)
+
+xlsx.sheets.each_with_index do |sheet_name, index|
+  csv_file_name = File.join(output_dir, "#{index + 1} #{sheet_name}.csv")
+
+  CSV.open(csv_file_name, "w") do |csv|
+    sheet = xlsx.sheet(sheet_name)
+
+    sheet.each_row_streaming do |row|
+      csv << row.map(&:value)
+    end
+  end
+
+  puts "Created: #{csv_file_name}"
+end
+
+puts "Conversion complete!"

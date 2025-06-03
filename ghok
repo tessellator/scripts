@@ -47,11 +47,15 @@ end
 incidents_resp = get("https://www.githubstatus.com/api/v2/incidents/unresolved.json")
 unless incidents_resp.incidents.empty?
   print "\n=== Incidents ==="
-  incidents_response.incidents.each do |incident|
+  incidents_resp.incidents.each do |incident|
     puts "\nName:\t#{incident.name}"
     puts "Impact:\t#{status_icon(incident.impact)} #{incident.impact}"
     puts "Status:\t#{incident.status}"
-    puts "Details:\t#{incident.incident_updates.first.body}"
     puts "Link:\t#{incident.shortlink}"
+    print "Updates:"
+    incident.incident_updates.each do |update|
+      puts "\n  Status: #{update.status} (#{ftime(DateTime.parse(update.updated_at))})"
+      puts "  #{update.body}"
+    end
   end
 end

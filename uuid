@@ -1,5 +1,20 @@
 #!/usr/bin/env ruby
 
+require "optparse"
 require "securerandom"
 
-print SecureRandom.uuid
+options = { n: 1 }
+OptionParser.new do |opts|
+  opts.banner = "Usage: uuid [options]"
+  opts.on("-n NUMBER", "--number=NUMBER", Integer, "Number of UUIDs to generate (default: 1)") do |n|
+    options[:n] = n
+  end
+end.parse!
+
+options[:n].times do |i|
+  if i == options[:n] - 1
+    print SecureRandom.uuid
+  else
+    puts SecureRandom.uuid
+  end
+end

@@ -1,0 +1,35 @@
+#!/usr/bin/env -S uv run --script
+
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pyobjc>=12.1",
+# ]
+# ///
+
+import sys
+from CoreServices import DCSCopyTextDefinition
+from CoreFoundation import CFRange
+
+
+def get_definition(word):
+    range_obj = CFRange(0, len(word))
+    return DCSCopyTextDefinition(None, word, range_obj)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("no word provided", file=sys.stderr)
+        sys.exit(1)
+
+    word = sys.argv[1]
+    definition = get_definition(word)
+
+    if definition:
+        print(definition)
+    else:
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()

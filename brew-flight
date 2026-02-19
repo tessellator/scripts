@@ -1,11 +1,18 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-formulae = `brew list --formulae`.split("\n")
+import subprocess
 
-formulae.each do |formula|
-  dependents = `brew uses --recursive --installed #{formula}`.split("\n")
+cmd = subprocess.run(["brew", "list", "--formulae"], capture_output=True, text=True)
+formulae = cmd.stdout.split("\n")
 
-  puts formula
-  puts dependents.map { |d| "  #{d}" }
-  puts ""
-end
+for formula in formulae:
+    cmd = subprocess.run(
+        ["brew", "uses", "--recursive", "--installed", formula],
+        capture_output=True,
+        text=True,
+    )
+    dependents = cmd.stdout.split("\n")
+
+    print(formula)
+    for d in dependents:
+        print(f"  {d}")

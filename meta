@@ -1,21 +1,33 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env -S uv run --script
 
-require "bundler/inline"
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "beautifulsoup4>=4.14.3",
+#     "httpx>=0.28.1",
+# ]
+# ///
 
-gemfile do
-  source "https://rubygems.org"
-  gem "nokogiri"
-end
+import sys
 
-require "net/http"
-require "nokogiri"
-require "uri"
+from bs4 import BeautifulSoup
+import httpx
 
-def skip(meta)
-  (meta["name"].nil? && meta["property"].nil?) ||
-    meta["name"] == "viewport" ||
-    meta["name"] == "robots"
-end
 
-doc = Nokogiri::HTML(Net::HTTP.get(URI(ARGV[0])))
-doc.css("meta").each { |meta| puts meta.to_html unless skip(meta) }
+def skip(meta):
+    if meta.get("name") is None and meta.get("property") is None:
+        return True
+    elif meta.get("name") in ["viewport", "robots"]:
+        return True
+    else:
+        return False
+
+
+url = sys.argv[1]
+resp = httpx.get(url)
+soup = BeautifulSoup(resp.text, "html.parser")
+
+metas = [meta for meta in soup.find_all("meta") if not skip(meta)]
+
+for meta in metas:
+    print(meta)

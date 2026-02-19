@@ -1,5 +1,6 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require "date"
+from datetime import date, timedelta
+import sys
 
-print Date.today.next_day(ARGV[0].to_i)
+print(date.today() + timedelta(days=int(sys.argv[1])))

@@ -1,15 +1,18 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-def spongebobify(str)
-  lower = false
-  str.chars.map do |c|
-    if c.match?(/[a-zA-Z]/)
-      lower = !lower
-      lower ? c.downcase : c.upcase
-    else
-      c
-    end
-  end.join
-end
+import sys
 
-print spongebobify(ARGV[0])
+
+def spongebobify(text):
+    lower = False
+    result = []
+    for char in text:
+        if char.isalpha():
+            lower = not lower
+            result.append(char.lower() if lower else char.upper())
+        else:
+            result.append(char)
+    return "".join(result)
+
+
+print(spongebobify(sys.argv[1]), end="")

@@ -1,61 +1,54 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
+
+import json
+import urllib.request
 
 # This program is inspired by the Go implementation by @abennett
 # https://github.com/abennett/ghok
 
-require "json"
-require "net/http"
-require "ostruct"
-require "time"
-require "uri"
 
-def status_icon(status)
-  case status
-  when "none", "operational"
-    "✅"
-  when "minor", "degraded_performance"
-    "⚠️"
-  when "major", "partial_outage"
-    "🟠"
-  when "critical", "major_outage"
-    "⛔️"
-  when "under_maintenance"
-    "🔧"
-  else
-    "❓"
-  end
-end
+def status_icon(status):
+    match status:
+        case "none" | "operational":
+            return "✅"
+        case "minor" | "degraded_performance":
+            return "⚠️"
+        case "major" | "partial_outage":
+            return "🟠"
+        case "critical" | "major_outage":
+            return "⛔️"
+        case "under_maintenance":
+            return "🔧"
+        case _:
+            return "❓"
 
-def get(uri_str)
-  JSON.parse(Net::HTTP.get(URI(uri_str)), object_class: OpenStruct)
-end
 
-def ftime(time)
-  tz = (time.strftime("%z") == "+0000") ? "UTC" : time.strftime("%Z")
-  time.strftime("%a, %d %b %Y %H:%M ") + tz
-end
+def get(url):
+    with urllib.request.urlopen(url) as response:
+        return json.loads(response.read())
+
 
 components_resp = get("https://www.githubstatus.com/api/v2/components.json")
-components = components_resp.components.reject { |c| c.id == "0l2p9nhqnxpd" }
-longest_len = components.map(&:name).max_by(&:length).length
+components = [
+    component
+    for component in components_resp["components"]
+    if component["id"] != "0l2p9nhqnxpd"
+]
 
-puts "=== Components as of #{ftime(DateTime.parse(components_resp.page.updated_at))} ==="
-components.each do |component|
-  puts "#{component.name.ljust(longest_len)} #{status_icon(component.status)}"
-end
+print(f"--- Components as of {components_resp['page']['updated_at']} ---")
+for component in components:
+    print(f"{status_icon(component['status'])} {component['name']}")
 
-incidents_resp = get("https://www.githubstatus.com/api/v2/incidents/unresolved.json")
-unless incidents_resp.incidents.empty?
-  print "\n=== Incidents ==="
-  incidents_resp.incidents.each do |incident|
-    puts "\nName:\t#{incident.name}"
-    puts "Impact:\t#{status_icon(incident.impact)} #{incident.impact}"
-    puts "Status:\t#{incident.status}"
-    puts "Link:\t#{incident.shortlink}"
-    print "Updates:"
-    incident.incident_updates.each do |update|
-      puts "\n  Status: #{update.status} (#{ftime(DateTime.parse(update.updated_at))})"
-      puts "  #{update.body}"
-    end
-  end
-end
+
+incidents = get("https://www.githubstatus.com/api/v2/incidents/unresolved.json")["incidents"]
+if len(incidents) > 0:
+    print("\n--- Incidents ---")
+    for incident in incidents:
+        print(f"\nName:\t{incident['name']}")
+        print(f"Impact:\t{status_icon(incident['impact'])}  {incident['impact']}")
+        print(f"Status:\t{incident['status']}")
+        print(f"Link:\t{incident['shortlink']}")
+        print("Updates:")
+        for update in incident["incident_updates"]:
+            print(f"\n  Status: {update['status']} ({update['updated_at']})")
+            print(f"  {update['body']}")

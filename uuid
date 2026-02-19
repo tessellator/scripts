@@ -1,20 +1,21 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require "optparse"
-require "securerandom"
+import optparse
+from uuid import uuid4
 
-options = { n: 1 }
-OptionParser.new do |opts|
-  opts.banner = "Usage: uuid [options]"
-  opts.on("-n NUMBER", "--number=NUMBER", Integer, "Number of UUIDs to generate (default: 1)") do |n|
-    options[:n] = n
-  end
-end.parse!
+parse = optparse.OptionParser()
+parse.add_option(
+    "-n",
+    "--number",
+    dest="number",
+    default=1,
+    type="int",
+    help="number of UUIDs to generate",
+)
+options, args = parse.parse_args()
 
-options[:n].times do |i|
-  if i == options[:n] - 1
-    print SecureRandom.uuid
-  else
-    puts SecureRandom.uuid
-  end
-end
+if options.number == 1:
+    print(uuid4(), end="")
+else:
+    for _ in range(options.number):
+        print(uuid4())

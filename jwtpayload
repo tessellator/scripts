@@ -1,12 +1,7 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require "bundler/inline"
-gemfile do
-  source "https://rubygems.org"
-  gem "base64"
-end
+import base64
+import sys
 
-require "base64"
-
-payload = ARGV[0].split(".")[1]
-puts Base64.decode64(payload)
+payload = sys.argv[1].split(".")[1]
+print(base64.urlsafe_b64decode(payload + "==").decode("utf-8"))

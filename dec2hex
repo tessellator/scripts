@@ -1,3 +1,5 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-print format("0x%x", ARGV[0].to_i)
+import sys
+
+print(hex(int(sys.argv[1])))

@@ -1,5 +1,10 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require "date"
+from datetime import datetime
+import sys
 
-print (Date.parse(ARGV[0]) - Date.parse(ARGV[1])).abs.to_i
+day1 = datetime.strptime(sys.argv[1], "%Y-%m-%d")
+day2 = datetime.strptime(sys.argv[2], "%Y-%m-%d")
+delta = day1 - day2
+
+print(abs(delta.days))

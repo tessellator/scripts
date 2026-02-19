@@ -1,3 +1,14 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env -S uv run --script
 
-puts ARGV[0].chars.permutation.map(&:join).uniq.sort
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "sympy>=1.14.0",
+# ]
+# ///
+
+import sys
+from sympy.utilities.iterables import multiset_permutations
+
+for p in multiset_permutations(sys.argv[1]):
+    print("".join(p))

@@ -1,24 +1,25 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require "net/http"
-require "json"
-require "ostruct"
-require "uri"
+import json
+from pathlib import Path
+import urllib.request
 
-begin
-  tags = File.readlines("#{Dir.home}/.config/lobsters/tags").map(&:chomp)
-rescue
-  tags = []
-end
+config_path = Path(f"{Path.home()}/.config/lobsters/tags")
+if config_path.exists():
+    with open(config_path) as f:
+        tags = f.read().splitlines()
+else:
+    tags = []
 
-response = Net::HTTP.get(URI("https://lobste.rs/hottest"))
-stories = JSON.parse(response, object_class: OpenStruct)
+contents = urllib.request.urlopen("https://lobste.rs/hottest").read()
+stories = [
+  story for story in json.loads(contents)
+  if any(tag in story["tags"] for tag in tags) or not tags
+]
+
 lines = []
 
-stories.each do |story|
-  next unless tags.empty? || tags.intersect?(story.tags)
+for story in stories:
+    lines.append(f"{story['title']} ({story['short_id_url']})\n{story['comment_count']} comments [{', '.join(story['tags'])}]")
 
-  lines << "#{story.title} (#{story.short_id_url})\n#{story.comment_count} comments [#{story.tags.join(", ")}]"
-end
-
-puts lines.join("\n\n")
+print("\n\n".join(lines))

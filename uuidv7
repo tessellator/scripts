@@ -1,26 +1,21 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require "bundler/inline"
+import optparse
+from uuid import uuid7
 
-gemfile do
-  source "https://rubygems.org"
-  gem "uuid7"
-end
+parse = optparse.OptionParser()
+parse.add_option(
+    "-n",
+    "--number",
+    dest="number",
+    default=1,
+    type="int",
+    help="number of UUIDs to generate",
+)
+options, args = parse.parse_args()
 
-require "optparse"
-
-options = { n: 1 }
-OptionParser.new do |opts|
-  opts.banner = "Usage: uuid [options]"
-  opts.on("-n NUMBER", "--number=NUMBER", Integer, "Number of UUIDs to generate (default: 1)") do |n|
-    options[:n] = n
-  end
-end.parse!
-
-options[:n].times do |i|
-  if i == options[:n] - 1
-    print UUID7.generate
-  else
-    puts UUID7.generate
-  end
-end
+if options.number == 1:
+    print(uuid7(), end="")
+else:
+    for _ in range(options.number):
+        print(uuid7())
